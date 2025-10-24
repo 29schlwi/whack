@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <title>VR Whack-a-Mole</title>
+</head>
+<body>
+    <a-scene background="color: #87CEEB">
+        <!-- Score and Timer display -->
+        <a-text id="scoreText" position="-2 3 -3" value="Score: 0" color="white" scale="2 2 2"></a-text>
+        <a-text id="timerText" position="1 3 -3" value="Time: 30" color="yellow" scale="2 2 2"></a-text>
+        
+        <!-- Goal display -->
+        <a-text id="goalText" position="0 2.5 -3" value="Goal: Reach 100 Points!" color="lime" scale="1.5 1.5 1.5" align="center"></a-text>
+        
+        <!-- End Screen (hidden initially) -->
+        <a-entity id="endScreen" visible="false">
+            <a-plane position="0 1 -3" width="6" height="4" color="#000000" opacity="0.8"></a-plane>
+            <a-text id="finalScoreText" position="0 2 -2.9" value="Game Over!" color="white" scale="3 3 3" align="center"></a-text>
+            <a-text id="finalScore" position="0 1.2 -2.9" value="Final Score: 0" color="yellow" scale="2 2 2" align="center"></a-text>
+            <a-text position="0 0.8 -2.9" value="Time ran out!" color="red" scale="1.5 1.5 1.5" align="center"></a-text>
+            <a-box id="tryAgainButton" class="button" position="0 0.2 -2.9" width="3" height="0.8" depth="0.1" color="green"
+                   animation__hover="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 200"
+                   animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"></a-box>
+            <a-text position="0 0.2 -2.8" value="TRY AGAIN" color="white" scale="1.5 1.5 1.5" align="center"></a-text>
+        </a-entity>
+        
+        <!-- Win Screen (hidden initially) -->
+        <a-entity id="winScreen" visible="false">
+            <a-plane position="0 1 -3" width="6" height="4" color="#FFD700" opacity="0.9"></a-plane>
+            <a-text position="0 2.2 -2.9" value="YOU WIN!" color="green" scale="3 3 3" align="center"></a-text>
+            <a-text id="winScore" position="0 1.5 -2.9" value="You reached 100 points!" color="black" scale="2 2 2" align="center"></a-text>
+            <a-text position="0 1.1 -2.9" value="Great job whacking moles!" color="darkgreen" scale="1.5 1.5 1.5" align="center"></a-text>
+            <a-box id="playAgainButton" class="button" position="0 0.2 -2.9" width="3" height="0.8" depth="0.1" color="blue"
+                   animation__hover="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 200"
+                   animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"></a-box>
+            <a-text position="0 0.2 -2.8" value="PLAY AGAIN" color="white" scale="1.5 1.5 1.5" align="center"></a-text>
+        </a-entity>
+        
+        <a-camera>
+            <a-cursor 
+                position="0 0 -1"
+                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                material="color: red; shader: flat"
+                raycaster="objects: .mole, .button">
+            </a-cursor>
+        </a-camera>
+
+        <!-- Ground and holes -->
+        <a-plane position="0 0 -4" rotation="-90 0 0" width="10" height="10" color="#228B22"></a-plane>
+        
+        <a-cylinder position="-3 -0.5 -2" radius="0.5" height="0.1" color="#654321"></a-cylinder>
+        <a-cylinder position="0 -0.5 -2" radius="0.5" height="0.1" color="#654321"></a-cylinder>
+        <a-cylinder position="3 -0.5 -2" radius="0.5" height="0.1" color="#654321"></a-cylinder>
+        <a-cylinder position="-3 -0.5 -4" radius="0.5" height="0.1" color="#654321"></a-cylinder>
+        <a-cylinder position="0 -0.5 -4" radius="0.5" height="0.1" color="#654321"></a-cylinder>
+        <a-cylinder position="3 -0.5 -4" radius="0.5" height="0.1" color="#654321"></a-cylinder>
+        <a-cylinder position="-3 -0.5 -6" radius="0.5" height="0.1" color="#654321"></a-cylinder>
+        <a-cylinder position="0 -0.5 -6" radius="0.5" height="0.1" color="#654321"></a-cylinder>
+        <a-cylinder position="3 -0.5 -6" radius="0.5" height="0.1" color="#654321"></a-cylinder>
+
+        <!-- Moles with smooth animations -->
+        <a-box class="mole" position="-3 -1.5 -2" width="0.7" height="0.7" depth="0.7" color="#8B4513"
+               animation__up="property: position; to: -3 0.2 -2; dur: 500; startEvents: popup"
+               animation__down="property: position; to: -3 -1.5 -2; dur: 300; startEvents: hidedown"></a-box>
+               
+        <a-sphere class="mole" position="0 -1.5 -2" radius="0.35" color="#A0522D"
+                  animation__up="property: position; to: 0 0.2 -2; dur: 500; startEvents: popup"
+                  animation__down="property: position; to: 0 -1.5 -2; dur: 300; startEvents: hidedown"></a-sphere>
+                  
+        <a-box class="mole" position="3 -1.5 -2" width="0.7" height="0.7" depth="0.7" color="#8B4513"
+               animation__up="property: position; to: 3 0.2 -2; dur: 500; startEvents: popup"
+               animation__down="property: position; to: 3 -1.5 -2; dur: 300; startEvents: hidedown"></a-box>
+               
+        <a-sphere class="mole" position="-3 -1.5 -4" radius="0.35" color="#A0522D"
+                  animation__up="property: position; to: -3 0.2 -4; dur: 500; startEvents: popup"
+                  animation__down="property: position; to: -3 -1.5 -4; dur: 300; startEvents: hidedown"></a-sphere>
+                  
+        <a-box class="mole" position="0 -1.5 -4" width="0.7" height="0.7" depth="0.7" color="#8B4513"
+               animation__up="property: position; to: 0 0.2 -4; dur: 500; startEvents: popup"
+               animation__down="property: position; to: 0 -1.5 -4; dur: 300; startEvents: hidedown"></a-box>
+               
+        <a-sphere class="mole" position="3 -1.5 -4" radius="0.35" color="#A0522D"
+                  animation__up="property: position; to: 3 0.2 -4; dur: 500; startEvents: popup"
+                  animation__down="property: position; to: 3 -1.5 -4; dur: 300; startEvents: hidedown"></a-sphere>
+                  
+        <a-box class="mole" position="-3 -1.5 -6" width="0.7" height="0.7" depth="0.7" color="#8B4513"
+               animation__up="property: position; to: -3 0.2 -6; dur: 500; startEvents: popup"
+               animation__down="property: position; to: -3 -1.5 -6; dur: 300; startEvents: hidedown"></a-box>
+               
+        <a-sphere class="mole" position="0 -1.5 -6" radius="0.35" color="#A0522D"
+                  animation__up="property: position; to: 0 0.2 -6; dur: 500; startEvents: popup"
+                  animation__down="property: position; to: 0 -1.5 -6; dur: 300; startEvents: hidedown"></a-sphere>
+                  
+        <a-box class="mole" position="3 -1.5 -6" width="0.7" height="0.7" depth="0.7" color="#8B4513"
+               animation__up="property: position; to: 3 0.2 -6; dur: 500; startEvents: popup"
+               animation__down="property: position; to: 3 -1.5 -6; dur: 300; startEvents: hidedown"></a-box>
+    </a-scene>
+
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let gameActive = false;
+        let gameStarted = false;
+        let gameInterval;
+        let timerInterval;
+        
+        const moles = document.querySelectorAll('.mole');
+        const scoreText = document.getElementById('scoreText');
+        const timerText = document.getElementById('timerText');
+        const endScreen = document.getElementById('endScreen');
+        const winScreen = document.getElementById('winScreen');
+        const finalScoreText = document.getElementById('finalScoreText');
+        const finalScore = document.getElementById('finalScore');
+        const tryAgainButton = document.getElementById('tryAgainButton');
+        const playAgainButton = document.getElementById('playAgainButton');
+        
+        function clearAllIntervals() {
+            if (gameInterval) {
+                clearInterval(gameInterval);
+                gameInterval = null;
+            }
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function updateScore() {
+            scoreText.setAttribute('value', `Score: ${score}`);
+            
+            if (score >= 100) {
+                winGame();
+            }
+        }
+        
+        function updateTimer() {
+            timerText.setAttribute('value', `Time: ${timeLeft}`);
+        }
+        
+        function startGame() {
+            clearAllIntervals();
+            
+            score = 0;
+            timeLeft = 30;
+            gameActive = true;
+            gameStarted = true;
+            
+            updateScore();
+            updateTimer();
+            endScreen.setAttribute('visible', false);
+            winScreen.setAttribute('visible', false);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+            
+            gameInterval = setInterval(popUpMole, 2500);
+            setTimeout(popUpMole, 1000);
+        }
+        
+        function winGame() {
+            gameActive = false;
+            clearAllIntervals();
+            
+            moles.forEach(mole => {
+                mole.emit('hidedown');
+            });
+            
+            winScreen.setAttribute('visible', true);
+        }
+        
+        function endGame() {
+            gameActive = false;
+            clearAllIntervals();
+            
+            moles.forEach(mole => {
+                mole.emit('hidedown');
+            });
+            
+            finalScore.setAttribute('value', `Final Score: ${score}`);
+            endScreen.setAttribute('visible', true);
+        }
+        
+        function popUpMole() {
+            if (!gameActive) return;
+            
+            const randomMole = moles[Math.floor(Math.random() * moles.length)];
+            randomMole.emit('popup');
+            
+            setTimeout(() => {
+                if (gameActive) {
+                    randomMole.emit('hidedown');
+                }
+            }, 2000);
+        }
+        
+        // Add click handlers for moles
+        moles.forEach(mole => {
+            mole.addEventListener('click', () => {
+                if (gameActive) {
+                    score += 10;
+                    updateScore();
+                    mole.emit('hidedown');
+                }
+            });
+        });
+        
+        // 
