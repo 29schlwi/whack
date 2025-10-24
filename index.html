@@ -151,6 +151,7 @@
             endScreen.setAttribute('visible', false);
             winScreen.setAttribute('visible', false);
             
+            // Start timer countdown
             timerInterval = setInterval(() => {
                 timeLeft--;
                 updateTimer();
@@ -160,8 +161,9 @@
                 }
             }, 1000);
             
-            gameInterval = setInterval(popUpMole, 2500);
-            setTimeout(popUpMole, 1000);
+            // Start mole spawning - This makes moles pop up!
+            gameInterval = setInterval(popUpMole, 1500); // Made it faster - every 1.5 seconds
+            setTimeout(popUpMole, 500); // First mole appears after 0.5 seconds
         }
         
         function winGame() {
@@ -190,9 +192,14 @@
         function popUpMole() {
             if (!gameActive) return;
             
+            // Pick a random mole
             const randomMole = moles[Math.floor(Math.random() * moles.length)];
-            randomMole.emit('popup');
             
+            // Make it pop up with animation
+            randomMole.emit('popup');
+            console.log('Mole popping up!'); // Debug message
+            
+            // Hide it after 2 seconds
             setTimeout(() => {
                 if (gameActive) {
                     randomMole.emit('hidedown');
@@ -207,8 +214,24 @@
                     score += 10;
                     updateScore();
                     mole.emit('hidedown');
+                    console.log('Mole whacked! Score:', score);
                 }
             });
         });
         
-        // 
+        // Button event listeners
+        tryAgainButton.addEventListener('click', () => {
+            startGame();
+        });
+        
+        playAgainButton.addEventListener('click', () => {
+            startGame();
+        });
+        
+        // Auto-start the game when page loads
+        setTimeout(() => {
+            startGame();
+        }, 1000); // Wait 1 second for everything to load
+    </script>
+</body>
+</html>
