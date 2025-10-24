@@ -98,140 +98,132 @@
     </a-scene>
 
     <script>
-        let score = 0;
-        let timeLeft = 30;
-        let gameActive = false;
-        let gameStarted = false;
-        let gameInterval;
-        let timerInterval;
-        
-        const moles = document.querySelectorAll('.mole');
-        const scoreText = document.getElementById('scoreText');
-        const timerText = document.getElementById('timerText');
-        const endScreen = document.getElementById('endScreen');
-        const winScreen = document.getElementById('winScreen');
-        const finalScoreText = document.getElementById('finalScoreText');
-        const finalScore = document.getElementById('finalScore');
-        const tryAgainButton = document.getElementById('tryAgainButton');
-        const playAgainButton = document.getElementById('playAgainButton');
-        
-        function clearAllIntervals() {
-            if (gameInterval) {
-                clearInterval(gameInterval);
-                gameInterval = null;
+        document.addEventListener('DOMContentLoaded', function() {
+            let score = 0;
+            let timeLeft = 30;
+            let gameActive = false;
+            let gameStarted = false;
+            let gameInterval;
+            let timerInterval;
+            
+            const moles = document.querySelectorAll('.mole');
+            const scoreText = document.getElementById('scoreText');
+            const timerText = document.getElementById('timerText');
+            const endScreen = document.getElementById('endScreen');
+            const winScreen = document.getElementById('winScreen');
+            const finalScoreText = document.getElementById('finalScoreText');
+            const finalScore = document.getElementById('finalScore');
+            const tryAgainButton = document.getElementById('tryAgainButton');
+            const playAgainButton = document.getElementById('playAgainButton');
+            
+            function clearAllIntervals() {
+                if (gameInterval) {
+                    clearInterval(gameInterval);
+                    gameInterval = null;
+                }
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
             }
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-        }
-        
-        function updateScore() {
-            scoreText.setAttribute('value', `Score: ${score}`);
             
-            if (score >= 100) {
-                winGame();
-            }
-        }
-        
-        function updateTimer() {
-            timerText.setAttribute('value', `Time: ${timeLeft}`);
-        }
-        
-        function startGame() {
-            clearAllIntervals();
-            
-            score = 0;
-            timeLeft = 30;
-            gameActive = true;
-            gameStarted = true;
-            
-            updateScore();
-            updateTimer();
-            endScreen.setAttribute('visible', false);
-            winScreen.setAttribute('visible', false);
-            
-            // Start timer countdown
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                updateTimer();
+            function updateScore() {
+                scoreText.setAttribute('value', `Score: ${score}`);
                 
-                if (timeLeft <= 0) {
-                    endGame();
+                if (score >= 100) {
+                    winGame();
                 }
-            }, 1000);
+            }
             
-            // Start mole spawning - This makes moles pop up!
-            gameInterval = setInterval(popUpMole, 1500); // Made it faster - every 1.5 seconds
-            setTimeout(popUpMole, 500); // First mole appears after 0.5 seconds
-        }
-        
-        function winGame() {
-            gameActive = false;
-            clearAllIntervals();
+            function updateTimer() {
+                timerText.setAttribute('value', `Time: ${timeLeft}`);
+            }
             
-            moles.forEach(mole => {
-                mole.emit('hidedown');
-            });
+            function startGame() {
+                clearAllIntervals();
+                
+                score = 0;
+                timeLeft = 30;
+                gameActive = true;
+                gameStarted = true;
+                
+                updateScore();
+                updateTimer();
+                endScreen.setAttribute('visible', false);
+                winScreen.setAttribute('visible', false);
+                
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimer();
+                    
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }, 1000);
+                
+                gameInterval = setInterval(popUpMole, 2000);
+                setTimeout(popUpMole, 1000);
+            }
             
-            winScreen.setAttribute('visible', true);
-        }
-        
-        function endGame() {
-            gameActive = false;
-            clearAllIntervals();
-            
-            moles.forEach(mole => {
-                mole.emit('hidedown');
-            });
-            
-            finalScore.setAttribute('value', `Final Score: ${score}`);
-            endScreen.setAttribute('visible', true);
-        }
-        
-        function popUpMole() {
-            if (!gameActive) return;
-            
-            // Pick a random mole
-            const randomMole = moles[Math.floor(Math.random() * moles.length)];
-            
-            // Make it pop up with animation
-            randomMole.emit('popup');
-            console.log('Mole popping up!'); // Debug message
-            
-            // Hide it after 2 seconds
-            setTimeout(() => {
-                if (gameActive) {
-                    randomMole.emit('hidedown');
-                }
-            }, 2000);
-        }
-        
-        // Add click handlers for moles
-        moles.forEach(mole => {
-            mole.addEventListener('click', () => {
-                if (gameActive) {
-                    score += 10;
-                    updateScore();
+            function winGame() {
+                gameActive = false;
+                clearAllIntervals();
+                
+                moles.forEach(mole => {
                     mole.emit('hidedown');
-                    console.log('Mole whacked! Score:', score);
-                }
+                });
+                
+                winScreen.setAttribute('visible', true);
+            }
+            
+            function endGame() {
+                gameActive = false;
+                clearAllIntervals();
+                
+                moles.forEach(mole => {
+                    mole.emit('hidedown');
+                });
+                
+                finalScore.setAttribute('value', `Final Score: ${score}`);
+                endScreen.setAttribute('visible', true);
+            }
+            
+            function popUpMole() {
+                if (!gameActive) return;
+                
+                const randomMole = moles[Math.floor(Math.random() * moles.length)];
+                randomMole.emit('popup');
+                
+                setTimeout(() => {
+                    if (gameActive) {
+                        randomMole.emit('hidedown');
+                    }
+                }, 2000);
+            }
+            
+            moles.forEach(mole => {
+                mole.addEventListener('click', () => {
+                    if (gameActive) {
+                        score += 10;
+                        updateScore();
+                        mole.emit('hidedown');
+                    }
+                });
+            });
+            
+            tryAgainButton.addEventListener('click', () => {
+                startGame();
+            });
+            
+            playAgainButton.addEventListener('click', () => {
+                startGame();
+            });
+            
+            // Wait for A-Frame to load, then start
+            document.querySelector('a-scene').addEventListener('loaded', () => {
+                setTimeout(startGame, 1000);
             });
         });
-        
-        // Button event listeners
-        tryAgainButton.addEventListener('click', () => {
-            startGame();
-        });
-        
-        playAgainButton.addEventListener('click', () => {
-            startGame();
-        });
-        
-        // Auto-start the game when page loads
-        setTimeout(() => {
-            startGame();
-        }, 1000); // Wait 1 second for everything to load
     </script>
 </body>
 </html>
